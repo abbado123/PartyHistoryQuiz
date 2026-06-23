@@ -540,9 +540,10 @@ function renderLearn() {
 function startSingleQuiz(qid) {
   showPage('quiz');
   quizMode = 'single';
-  const idx = QUESTIONS.findIndex(q => q.id === qid);
-  quizQuestions = QUESTIONS.slice();
-  quizIndex = idx >= 0 ? idx : 0;
+  const clicked = QUESTIONS.find(q => q.id === qid);
+  const rest = shuffle(QUESTIONS.filter(q => q.id !== qid));
+  quizQuestions = clicked ? [clicked, ...rest] : shuffle(QUESTIONS.slice());
+  quizIndex = 0;
   quizScore = 0;
   renderQuizQuestion();
   document.getElementById('quiz-start').style.display = 'none';
@@ -555,15 +556,15 @@ function startQuiz(mode) {
   quizMode = mode;
   if (mode === 'all') {
     // Shuffle
-    quizQuestions = QUESTIONS.slice().sort(() => Math.random() - 0.5);
+    quizQuestions = shuffle(QUESTIONS.slice());
   } else if (mode === 'wrong') {
-    quizQuestions = QUESTIONS.filter(q => getStatus(q.id) === 'wrong');
+    quizQuestions = shuffle(QUESTIONS.filter(q => getStatus(q.id) === 'wrong'));
     if (quizQuestions.length === 0) {
       alert('没有错题，太棒了！');
       return;
     }
   } else if (mode === 'undone') {
-    quizQuestions = QUESTIONS.filter(q => !getStatus(q.id));
+    quizQuestions = shuffle(QUESTIONS.filter(q => !getStatus(q.id)));
     if (quizQuestions.length === 0) {
       alert('所有题目都已完成！');
       return;
